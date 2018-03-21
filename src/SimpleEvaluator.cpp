@@ -4,6 +4,7 @@
 
 #include "SimpleEstimator.h"
 #include "SimpleEvaluator.h"
+#include <tuple>
 
 SimpleEvaluator::SimpleEvaluator(std::shared_ptr<SimpleGraph> &g) {
 
@@ -30,14 +31,28 @@ cardStat SimpleEvaluator::computeStats(std::shared_ptr<SimpleGraph> &g) {
     cardStat stats {};
 
     for(int source = 0; source < g->getNoVertices(); source++) {
-        if(!g->adj[source].empty()) stats.noOut++;
+        //if(!g->adj[source].empty()) stats.noOut++;
+        if(!g->adjacency[source].empty()) {
+            stats.noOut++;
+            stats.noIn++;
+        }
+        /*if (std::find(g->sourceNodes.begin(), g->sourceNodes.end(), source) != g->sourceNodes.end())
+        {
+            // Element in vector.
+            stats.noOut++;
+        }
+        if (std::find(g->targetNodes.begin(), g->targetNodes.end(), source) != g->targetNodes.end())
+        {
+            // Element in vector.
+            stats.noIn++;
+        }*/
     }
 
     stats.noPaths = g->getNoDistinctEdges();
 
-    for(int target = 0; target < g->getNoVertices(); target++) {
+    /*for(int target = 0; target < g->getNoVertices(); target++) {
         if(!g->reverse_adj[target].empty()) stats.noIn++;
-    }
+    }*/
 
     return stats;
 }
@@ -50,10 +65,13 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::project(uint32_t projectLabel, boo
     if(!inverse) {
         // going forward
         for(uint32_t source = 0; source < in->getNoVertices(); source++) {
-            for (auto labelTarget : in->adj[source]) {
+            //for (auto labelTarget : in->adj[source]) {
+            for (auto labelTarget : in->adjacency[source]) {
 
-                auto label = labelTarget.first;
-                auto target = labelTarget.second;
+                //auto label = labelTarget.first;
+                //auto target = labelTarget.second;
+                auto label = std::get<1>(labelTarget);
+                auto target = std::get<0>(labelTarget);
 
                 if (label == projectLabel)
                     out->addEdge(source, target, label);
@@ -62,10 +80,13 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::project(uint32_t projectLabel, boo
     } else {
         // going backward
         for(uint32_t source = 0; source < in->getNoVertices(); source++) {
-            for (auto labelTarget : in->reverse_adj[source]) {
+            //for (auto labelTarget : in->reverse_adj[source]) {
+            for (auto labelTarget : in->adjacency[source]) {
 
-                auto label = labelTarget.first;
-                auto target = labelTarget.second;
+                //auto label = labelTarget.first;
+                //auto target = labelTarget.second;
+                auto label = std::get<1>(labelTarget);
+                auto target = std::get<2>(labelTarget);
 
                 if (label == projectLabel)
                     out->addEdge(source, target, label);
@@ -82,13 +103,17 @@ std::shared_ptr<SimpleGraph> SimpleEvaluator::join(std::shared_ptr<SimpleGraph> 
     out->setNoLabels(1);
 
     for(uint32_t leftSource = 0; leftSource < left->getNoVertices(); leftSource++) {
-        for (auto labelTarget : left->adj[leftSource]) {
+        //for (auto labelTarget : left->adj[leftSource]) {
+        for (auto labelTarget : left->adjacency[leftSource]) {
 
-            int leftTarget = labelTarget.second;
+            //int leftTarget = labelTarget.second;
+            int leftTarget = std::get<0>(labelTarget);
             // try to join the left target with right source
-            for (auto rightLabelTarget : right->adj[leftTarget]) {
+            //for (auto rightLabelTarget : right->adj[leftTarget]) {
+            for (auto rightLabelTarget : right->adjacency[leftTarget]) {
 
-                auto rightTarget = rightLabelTarget.second;
+                //auto rightTarget = rightLabelTarget.second;
+                auto rightTarget = std::get<0>(rightLabelTarget);
                 out->addEdge(leftSource, rightTarget, 0);
 
             }

@@ -7,6 +7,7 @@
 #include "SimpleGraph.h"
 #include "SimpleEstimator.h"
 #include <map>
+#include <tuple>
 
 std::map<uint32_t , cardStat> est_result;
 
@@ -30,8 +31,10 @@ void SimpleEstimator::prepare() {
     }
 
     for (int source = 0; source < graph->getNoVertices(); source++) {
-        for (auto labelSource : graph->adj[source]) {
-            est_result[labelSource.first].noPaths++;
+        //for (auto labelSource : graph->adj[source]) {
+        for (auto labelSource : graph->adjacency[source]) {
+            //est_result[labelSource.first].noPaths++;
+            est_result[std::get<1>(labelSource)].noPaths++;
         }
     }
 

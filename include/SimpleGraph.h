@@ -12,11 +12,18 @@
 #include <regex>
 #include <fstream>
 #include "Graph.h"
+#include <tuple>
 
 class SimpleGraph : public Graph {
 public:
-    std::vector<std::vector<std::pair<uint32_t,uint32_t>>> adj;
-    std::vector<std::vector<std::pair<uint32_t,uint32_t>>> reverse_adj; // vertex adjacency list
+    //std::vector<std::vector<std::pair<uint32_t,uint32_t>>> adj;
+    //std::vector<std::vector<std::pair<uint32_t,uint32_t>>> reverse_adj; // vertex adjacency list
+    std::vector<std::vector<std::tuple<uint32_t,uint32_t,uint32_t>>> adjacency;
+
+    //std::vector<uint32_t> sourceNodes;
+    //std::vector<uint32_t> edgeLabels;
+    //std::vector<uint32_t> targetNodes;
+
 protected:
     uint32_t V;
     uint32_t L;
